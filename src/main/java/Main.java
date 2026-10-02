@@ -1,54 +1,67 @@
-import java.math.BigDecimal;
-import java.util.Locale;
 import java.util.Scanner;
 
 public class Main {
+
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        sc.useLocale(Locale.US);
-
-        Account account = new Account(12345, 999, new BigDecimal("10000.00"), BankType.AUM);
-
-        System.out.println("Добро пожаловать в банкомат!");
-
-        System.out.println("Введите номер карты:");
+        System.out.println("создание первого бойца");
+        Hero hero1 = createHero(sc);
+        if (hero1 == null) {
+            return;
+        }
+        System.out.println("создание второго бойца");
+        Hero hero2 = createHero(sc);
+        if (hero2 == null) {
+            return;
+        }
+        Arena arena = new Arena(hero1, hero2);
+        arena.startTournament();
+    }
+    public static Hero createHero(Scanner sc) {
+        System.out.println("Выберите тип: 1 - Воин, 2 - Маг");
         if (!sc.hasNextInt()) {
-            System.out.println("Ошибка доступа");
-            return;
+            System.out.println("Нужно ввести число");
+            return null;
         }
-        int card = sc.nextInt();
+        int type = sc.nextInt();
+        if (type != 1 && type != 2) {
+            System.out.println("Нет такого типа");
+            return null;
+        }
+        System.out.println("Введите имя:");
+        String name = sc.next();
 
-        System.out.println("Введите пин-код:");
+        System.out.println("Введите максимальное здоровье:");
         if (!sc.hasNextInt()) {
-            System.out.println("Ошибка доступа");
-            return;
+            System.out.println("Нужно ввести число");
+            return null;
         }
-        int pin = sc.nextInt();
+        int maxHealth = sc.nextInt();
 
-        if (card != account.getCard() || pin != account.getPin()) {
-            System.out.println("Ошибка доступа");
-            return;
+        System.out.println("Введите базовую атаку:");
+        if (!sc.hasNextInt()) {
+            System.out.println("нужно ввести число");
+            return null;
         }
+        int baseAttack = sc.nextInt();
 
-        System.out.println(account);
-        CashMachine machine = new CashMachine();
-
-        System.out.println("Введите сумму для внесения:");
-        if (!sc.hasNextBigDecimal()) {
-            System.out.println("Неверная сумма");
-            return;
+        if (type == 1) {
+            System.out.println("Введите броню:");
+            if (!sc.hasNextInt()) {
+                System.out.println("нужно ввести число");
+                return null;
+            }
+            int armor = sc.nextInt();
+            return new Warrior(name, maxHealth, baseAttack, armor);
+        } else {
+            System.out.println("Введите максимальную ману:");
+            if (!sc.hasNextInt()) {
+                System.out.println("нужно ввести число");
+                return null;
+            }
+            int maxMana = sc.nextInt();
+            return new Mage(name, maxHealth, baseAttack, maxMana);
         }
-        BigDecimal sum1 = sc.nextBigDecimal();
-        account.balance = machine.deposit(account.getBalance(), sum1);
-        System.out.println("Баланс после внесения: " + account.getBalance() + " руб.");
-
-        System.out.println("Введите сумму для снятия:");
-        if (!sc.hasNextBigDecimal()) {
-            System.out.println("Неверная сумма");
-            return;
-        }
-        BigDecimal sum2 = sc.nextBigDecimal();
-        account.balance = machine.withdraw(account.getBalance(), sum2, account.getBank());
-        System.out.println("Баланс после снятия: " + account.getBalance() + " руб.");
     }
 }
